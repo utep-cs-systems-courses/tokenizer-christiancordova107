@@ -98,7 +98,6 @@ void free_historyR(Item *dummy)
   }
 
   else {
-    free(dummy->id);
     free(dummy->str);
     free(dummy->next);
     free(dummy);
