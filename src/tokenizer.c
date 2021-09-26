@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "tokenizer.h"
 
-int space_bar(char c)
+int space_char(char c)
 {
   if(c == ' ' || c == '\t'){
     return 1;
@@ -14,7 +14,7 @@ int space_bar(char c)
 
 int non_space_char(char c)
 {
-  if(!space_bar(c)){
+  if(!space_char(c)){
       return 1;
   }
     
@@ -27,7 +27,7 @@ int non_space_char(char c)
   {
     char *dummy = str;
 
-    while((*dummy) != '\0' && space_bar(*dummy)){
+    while((*dummy) != '\0' && space_char(*dummy)){
       dummy++;
     }
 
@@ -36,36 +36,34 @@ int non_space_char(char c)
 
   char *word_terminator(char *word)
   {
-    char *dummy = word;
+    int i = 0;
 
-    while(1) {
-      if((*dummy) == '\0') {
-	return dummy;  
+    while(non_space_char(*(word + i))) {
+      if(*(word+i) == '\0') {
+	return word + i;
       }
-      else {
-	dummy++;
-      }
+      
+      i++;
     }
+    
+    return word+i;
+    
   }
 
   int count_words(char *str)
   {
-    char *dummy = str;
-    char *end = word_terminator(str);
+    char *dummy  = word_start(str);
     int count = 0;
 
-    while(dummy < end){
-      if(non_space_char(*dummy)){
-	dummy++;
-
-	while (non_space_char(*dummy)) {
-	  dummy++;
-	}
-	count++;
+    while (*dummy != '\0') {
+      if(non_space_char(*dummy)) {
+	  count++;
       }
-      dummy++;
+      
+      dummy = word_terminator(dummy);
+      dummy = word_start(dummy);
     }
-      return count;
+    return count;
   }
 
 char *copy_str(char *inStr, short len)
@@ -87,30 +85,16 @@ char *copy_str(char *inStr, short len)
  {
    int numOfWords = count_words(str);
    char **tokens = malloc((numOfWords + 1) * sizeof(char *));
-   char *dummy = str;
-   char *terminator = word_terminator(str);
-   int wordSize;
+   char *start, *end;
+   start = word_start(str);
    
-   for (int i = 0; i<numOfWords; i++) {
-     wordSize = 0;
-     char *start;
+   for(int i = 0; i<numOfWords; i++) {
+     end = word_terminator(start);
      
-     dummy = start = word_start(dummy);
-     
-     while(non_space_char(*dummy) && dummy  != terminator) {
-       dummy++;
-       wordSize++;
-     }
-     
-     char word[wordSize];
-     
-     for (int i = 0; i < wordSize; i++) {
-       word[i] = *(start++);
-     }
-     
-     word[wordSize] = '\0';
-     
-     tokens[i] = copy_str(word, wordSize);
+     if(non_space_char(*start) && start != end - 1)
+	tokens[i] = copy_str(start, end - start);
+
+     start = word_start(end);
    }
    
    tokens[numOfWords] = NULL;
@@ -120,9 +104,9 @@ char *copy_str(char *inStr, short len)
  void print_tokens(char **tokens)
  {
    char **dummy = tokens;
-   
+   int i = 0;
    while (*dummy != NULL) {
-     printf("%s\n", *(dummy++));
+     printf("tokens[%d] = %s\n", i++, *(dummy++));
    }
  }
 
@@ -132,6 +116,7 @@ char *copy_str(char *inStr, short len)
 
    while (*dummy != NULL) {
      free(*dummy);
+     dummy++;
    }
 
    free(tokens);
