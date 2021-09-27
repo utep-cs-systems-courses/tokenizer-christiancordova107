@@ -23,17 +23,15 @@ void add_history(List *list, char *str)
 {
   Item *dummy = list->root;
   int count = 0;
-  short lengthOfStr = 0;
-
-  for(int i = 0; *(str+i) != '\0'; i++) {
-    lengthOfStr++;
-  }  
+  char *start, *end;
+  start = word_start(str);
+  end = word_terminator(start);
   
   while (1) {
     if(dummy->next == NULL) {
       Item *newNode = malloc(sizeof(Item));
       newNode->id = count;
-      newNode->str = copy_str(str, lengthOfStr);
+      newNode->str = copy_str(str, end - start);
       newNode->next = NULL;
       dummy->next = newNode;
       break;
@@ -81,6 +79,7 @@ void free_history(List *list)
 {
   if(list->root->next != NULL) {
     free_historyR(list->root->next);
+    free(list->root);
   }
   
   else {
@@ -92,15 +91,18 @@ void free_history(List *list)
 
 void free_historyR(Item *dummy)
 {
-  if(dummy->next != NULL)
-  {
-    free_historyR(dummy);
-  }
-
-  else {
-    free(dummy->str);
-    free(dummy->next);
-    free(dummy);
+  if(dummy == NULL) {
     return;
   }
+  
+  else if(dummy->next != NULL)
+  {
+    free_historyR(dummy->next);
+  }
+  
+  free(dummy->str);
+  free(dummy->next);
+  free(dummy);
+  return;
+  
 }

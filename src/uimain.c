@@ -41,8 +41,9 @@ int main()
     
     
     printf("Input was: %s\n", input);
+    free(tokens);
   }
-  free_tokens(tokens);
+  //free_tokens(tokens);
   free_history(ls);
   
   return 0;
