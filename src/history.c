@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "history.h"
-#include "tokenizer.c"
+#include "tokenizer.h"
 
 void free_historyR(Item *dummy);
 
