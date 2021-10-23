@@ -27,34 +27,31 @@ int non_space_char(char c)
   {
     char *dummy = str;
 
-    while((*dummy) != '\0' && space_char(*dummy)){
+    while((*dummy) != '\0' && space_char(*dummy)) {
       dummy++;
     }
-
-    return dummy; 
+    return dummy;
   }
 
   char *word_terminator(char *word)
   {
     int i = 0;
 
-    while(1) {
-      if(*(word+i) == '\0') {
-	return word + i;
-      }
-      
-      else {
+    while(non_space_char(*(word+i))) {
+      if(space_char(*(word+i)))
+	 return word+i;
+      else
 	i++;
-      }
     }
+    return word+i;
   }
 
   int count_words(char *str)
   {
-    char *dummy  = word_start(str);
+    char *dummy = word_start(str);
     int count = 0;
 
-    while (*dummy != '\0') {
+    while ((*dummy) != '\0') {
       if(non_space_char(*dummy)) {
 	  count++;
       }
